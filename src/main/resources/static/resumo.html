@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dados Cadastrados</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f1eedc;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-box {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 1.1px 2.1px 2.7px rgba(0, 0, 0, 0.021),
+            2.9px 5.4px 6.9px rgba(0, 0, 0, 0.03),
+            5.8px 11px 14px rgba(0, 0, 0, 0.042),
+            12px 22.6px 28.8px rgba(0, 0, 0, 0.059),
+            33px 62px 79px rgba(0, 0, 0, 0.11);
+            width: 400px;
+            text-align: center;
+            background-color: #b3c8cf;
+        }
+
+        h2, h3 {
+            margin: 10px 0;
+            color: #000043;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #000043;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #000063;
+        }
+
+        #dadosContainer {
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        #dadosContainer div {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #dadosContainer h3 {
+            margin-bottom: 5px;
+            color: #000063;
+        }
+
+        #dadosContainer p {
+            margin-bottom: 5px;
+        }
+
+        #dadosContainer strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="form-box">
+        <h2>Dados Cadastrados</h2>
+        <div id="dadosContainer"></div>
+        <button id="btnNextPage">Enviar</button>
+    </div>
+</div>
+<script>
+    Promise.all([
+        fetch('http://localhost:8081/paciente/listarPacientes'),
+        fetch('http://localhost:8081/medico/listarMedico'),
+        fetch('http://localhost:8081/medicamento/listarMedicamento'),
+    ])
+        .then(responses => Promise.all(responses.map(response => response.json())))
+        .then(([pacientes, medicos, medicamentos]) => {
+            const dadosContainer = document.getElementById('dadosContainer');
+
+            // Seleciona o paciente com o maior ID
+            const ultimoPaciente = pacientes.reduce((max, paciente) => max.id > paciente.id ? max : paciente, pacientes[0]);
+            const divPaciente = document.createElement('div');
+            divPaciente.innerHTML = `
+                <h3>Dados Paciente</h3>
+                <p><strong>Nome:</strong> ${ultimoPaciente.nome}</p>
+                <p><strong>Data de Nascimento:</strong> ${ultimoPaciente.dataNascimento}</p>
+                <p><strong>CPF:</strong> ${ultimoPaciente.cpf}</p>
+                <p><strong>Plano de Saúde:</strong> ${ultimoPaciente.planoSaude ? 'Sim' : 'Não'}</p>
+            `;
+            dadosContainer.appendChild(divPaciente);
+
+            // Seleciona o médico com o maior ID
+            const ultimoMedico = medicos.reduce((max, medico) => max.id > medico.id ? max : medico, medicos[0]);
+            const divMedico = document.createElement('div');
+            divMedico.innerHTML = `
+                <h3>Dados Médico</h3>
+                <p><strong>Nome:</strong> ${ultimoMedico.nome}</p>
+                <p><strong>CRM:</strong> ${ultimoMedico.crm}</p>
+            `;
+            dadosContainer.appendChild(divMedico);
+
+            // Seleciona o medicamento com o maior ID
+            const ultimoMedicamento = medicamentos.reduce((max, medicamento) => max.id > medicamento.id ? max : medicamento, medicamentos[0]);
+            const divMedicamento = document.createElement('div');
+            divMedicamento.innerHTML = `
+                <h3>Medicamentos</h3>
+                <p><strong>Nome:</strong> ${ultimoMedicamento.nome}</p>
+                <p><strong>Dosagem:</strong> ${ultimoMedicamento.dosagem}</p>
+                <p><strong>Quantidade:</strong> ${ultimoMedicamento.quantidade}</p>
+                <p><strong>Via de Administração:</strong> ${ultimoMedicamento.viaAdministracao}</p>
+                <p><strong>Observação:</strong> ${ultimoMedicamento.observacao || '-'}</p>
+            `;
+            dadosContainer.appendChild(divMedicamento);
+        })
+        .catch(error => {
+            console.error('Erro ao recuperar os dados:', error);
+            alert('Ocorreu um erro ao recuperar os dados.');
+        });
+
+    document.getElementById('btnNextPage').addEventListener('click', function() {
+        window.location.href = "comprovanteMedico.html";
+    });
+</script>

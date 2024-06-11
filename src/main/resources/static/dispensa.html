@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sistema de Interação entre Farmácia e Hospital</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f1eedc;
+    }
+
+    .container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .form-box {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 1.1px 2.1px 2.7px rgba(0, 0, 0, 0.021),
+        2.9px 5.4px 6.9px rgba(0, 0, 0, 0.03),
+        5.8px 11px 14px rgba(0, 0, 0, 0.042),
+        12px 22.6px 28.8px rgba(0, 0, 0, 0.059),
+        33px 62px 79px rgba(0, 0, 0, 0.11);
+        width: 300px;
+        text-align: center;
+        background-color: #A7DF91;
+    }
+
+    h2, h3 {
+        margin-bottom: 20px;
+        color: #154F10;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #154F10;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #286823;
+    }
+
+    @media (max-width: 768px) {
+        .form-box {
+            width: 80%;
+        }
+    }
+</style>
+<body>
+<div class="container">
+    <div class="form-box">
+        <h2>Dispensação de Medicamentos</h2>
+        <form id="cadastroForm">
+            <input type="text" id="data" placeholder="Data" required/>
+            <input type="text" id="medicamento" placeholder="Medicamento" required/>
+            <input type="text" id="quantidade" placeholder="Quantidade" required/>
+            <input type="text" id="farmaceutico" placeholder="Farmacêutico" required/>
+            <button id="redirectButton" type="submit">Enviar</button>
+        </form>
+        <script>
+            document.getElementById('cadastroForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const data = document.getElementById('data').value;
+                const medicamento = document.getElementById('medicamento').value;
+                const quantidade = document.getElementById('quantidade').value;
+                const farmaceutico = document.getElementById('farmaceutico').value;
+
+                const dispensa = {
+                    dataDispensa: data,
+                    medicamentosDispensados: medicamento,
+                    quantidadeDispensado: quantidade,
+                    farmaceuticoResponsavel: farmaceutico
+                };
+
+                fetch('http://localhost:8081/dispensa/cadastrarDispensa', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dispensa),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text().then(text => { throw new Error(text) });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Success:', data);
+                        window.location.href = "/comprovante.html";
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('Ocorreu um erro: ' + error.message);
+                    });
+            });
+        </script>
+    </div>
+</div>
+</body>
+</html>
