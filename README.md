@@ -23,9 +23,6 @@ Este sistema permite que médicos enviem receitas eletrônicas diretamente para 
 - **Backend:** Java com Spring Framework
 - **Banco de Dados:** PostgreSQL
 
-## Demonstração
-Você pode ver o sistema em funcionamento através do seguinte link: [Demonstração do Sistema](https://exemplo.com/demonstracao)
-
 ## Contribuição
 Sinta-se à vontade para contribuir com melhorias através de pull requests.
 
